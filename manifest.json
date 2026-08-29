@@ -1,0 +1,15 @@
+{
+  "name": "Leadership Content Hub",
+  "short_name": "LeadershipHub",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#D97706",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/lucide:book-open-check.svg?color=%23d97706",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
