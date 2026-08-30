@@ -1097,19 +1097,18 @@
           </div>
 
           <div class="form-group">
-            <label>🏷️ ประเภทที่ต้องการแจ้ง / ปรับปรุง *</label>
+            <label>🏷️ หัวข้อการแก้ไข / ปรับปรุง *</label>
             <select class="form-control" id="issueCategory" required>
-              <option value="image_improve">🎨 ปรับปรุงรูปภาพเดิม (เช่น รูป 1-5 ไม่ชัด / ข้อความเพี้ยน)</option>
-              <option value="new_style">✨ ขอเพิ่มรูปภาพสไตล์ใหม่ (เช่น 3D Metaphor, Luxury Spread, Minimal)</option>
-              <option value="voice_improve">🎙️ ปรับปรุงเสียงพากย์ / แก้คำอ่าน / ดนตรีประกอบ</option>
-              <option value="content_fix">📝 ขอแก้ไขเนื้อหาบทความ / คำผิด / การแปลภาษา</option>
-              <option value="other">💡 ข้อเสนอแนะการปรับปรุงอื่นๆ</option>
+              <option value="สร้างภาพใหม่">🎨 สร้างภาพใหม่</option>
+              <option value="แก้เนื้อหา">📝 แก้เนื้อหา</option>
+              <option value="แก้เสียง">🎙️ แก้เสียง</option>
+              <option value="แก้วิดีโอ">🎬 แก้วิดีโอ</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>📝 รายละเอียดปัญหา / สิ่งที่ต้องการให้ปรับปรุง *</label>
-            <textarea class="form-control" id="issueDetails" placeholder="ระบุสิ่งที่ต้องการให้แก้ไข เช่น ขอแก้รูปที่ 3 ให้เป็นภาพ 3D หลอดไฟโปร่งแสง, หรือขอให้อ่านออกเสียงคำว่า ... ใหม่" required></textarea>
+            <label>📝 หมายเหตุสั้นๆ (ถ้ามี)</label>
+            <textarea class="form-control" id="issueDetails" placeholder="ระบุสั้นๆ เช่น ปรับ Style 5, ตัดวรรคบรรทัดแรก, หรือสลับเสียงพากย์" style="min-height: 60px;"></textarea>
           </div>
 
           <div class="form-group">
@@ -1149,10 +1148,20 @@
         <button class="btn-close" onclick="closeQueueTrackerDirect()">✕</button>
       </div>
       <div class="modal-body">
+        <!-- Dual Queue Switcher -->
+        <div style="display: flex; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+          <button id="tabQueueRequests" class="btn-action" style="background: linear-gradient(135deg, var(--gold), #B45309); font-size: 13px; padding: 8px 16px;" onclick="switchQueueType('requests')">
+            💡 คิวเสนอหัวข้อ & EP ใหม่
+          </button>
+          <button id="tabQueueIssues" class="btn-action" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text-muted); font-size: 13px; padding: 8px 16px;" onclick="switchQueueType('issues')">
+            ⚠️ คิวแจ้งซ่อมแซม & แก้ไข
+          </button>
+        </div>
+
         <div class="tracker-stats">
           <div class="tstat-card">
             <div class="tval" style="color:#fff;" id="cntTotal">0</div>
-            <div class="tlbl">📋 คำขอทั้งหมด</div>
+            <div class="tlbl">📋 รายการทั้งหมด</div>
           </div>
           <div class="tstat-card">
             <div class="tval" style="color:#FBBF24;" id="cntPending">0</div>
@@ -1171,8 +1180,8 @@
         <div class="filter-tabs">
           <button class="ftab active" onclick="filterTickets('all')">ทั้งหมด</button>
           <button class="ftab" onclick="filterTickets('pending')">🟡 รอดำเนินการ</button>
-          <button class="ftab" onclick="filterTickets('in_progress')">🔵 กำลังดำเนินการ</button>
-          <button class="ftab" onclick="filterTickets('completed')">🟢 ดำเนินการเสร็จแล้ว</button>
+          <button class="ftab" onclick="filterTickets('in_progress')">🔵 กำลังทำ</button>
+          <button class="ftab" onclick="filterTickets('completed')">🟢 เสร็จแล้ว</button>
         </div>
 
         <div class="ticket-list" id="ticketListContainer"></div>
@@ -1234,51 +1243,79 @@
     let currentUtterance = null;
     let attachedImageBase64 = "";
 
-    // Default Seed Issues
-    const DEFAULT_ISSUES = [
+    // Default Seed Topic Requests
+    const DEFAULT_TOPIC_REQUESTS = [
       {
-        ticketId: "ISSUE-20260829-101",
-        timestamp: "2026-08-29T20:45:00.000Z",
-        series: "FEEDBACK_CULTURE",
-        seriesTitle: "วัฒนธรรมฟีดแบ็ก (Feedback Culture)",
-        episode: "EP.3",
-        category: "image_improve",
-        categoryLabel: "🎨 ปรับปรุงรูปภาพ",
-        details: "ขอปรับปรุงรูป Style 5 (Luxury Book Spread) ให้เป็น Pure AI สองคอลัมน์คมชัดโดยไม่ใช้ Hybrid Code",
-        status: "completed",
-        statusLabel: "🟢 ดำเนินการเสร็จสิ้น",
-        resolution: "ปรับปรุงด้วย Gemini 3.1 Pro Pure AI สองคอลัมน์ Dark Obsidian สำเร็จ 100% พร้อม Lightbox Viewer",
-        attachedImage: ""
+        ticketId: "REQ-101",
+        timestamp: "2026-08-29T21:52:16.000Z",
+        topic: "การเปลี่ยนความขัดแย้งข้ามสายงาน (Silo Mentality) ให้เป็นความร่วมมือเชิงกลยุทธ์",
+        category: "CONFLICT_RESOLUTION",
+        contact: "Wacharawat",
+        status: "pending",
+        statusLabel: "🟡 รอดำเนินการ"
       },
       {
-        ticketId: "ISSUE-20260829-102",
-        timestamp: "2026-08-29T21:15:00.000Z",
-        series: "DECISION_MAKING_UNDER_PRESSURE",
-        seriesTitle: "การตัดสินใจภายใต้ความกดดัน",
-        episode: "EP.1",
-        category: "voice_improve",
-        categoryLabel: "🎙️ ปรับปรุงเสียงพากย์",
-        details: "ขอให้เสียงพากย์อ่านเนื้อหาบทความฉบับเต็มทั้งเรื่อง พร้อมอินโทรเพลง BGM แบบ FEEDBACK_CULTURE EP.3",
+        ticketId: "REQ-102",
+        timestamp: "2026-08-30T01:00:00.000Z",
+        topic: "ภาวะผู้นำในการสร้าง Psychological Safety ในทีม",
+        category: "PSYCHOLOGICAL_SAFETY",
+        contact: "Admin",
         status: "completed",
-        statusLabel: "🟢 ดำเนินการเสร็จสิ้น",
-        resolution: "สังเคราะห์ด้วย Higgs Audio v3 mom_1.wav ความยาวเต็มเรื่อง 89.61 วิ พร้อม Safe BGM Ducking 0.16",
-        attachedImage: ""
-      },
-      {
-        ticketId: "ISSUE-20260829-103",
-        timestamp: "2026-08-29T22:30:00.000Z",
-        series: "EMPATHIC_COMMUNICATION",
-        seriesTitle: "การสื่อสารด้วยความเห็นอกเห็นใจ",
-        episode: "EP.4",
-        category: "new_style",
-        categoryLabel: "✨ ขอเพิ่มรูปสไตล์ใหม่",
-        details: "อยากได้ภาพประกอบสไตล์ Futuristic Architectural Metaphor สำหรับ EP ถัดไป",
-        status: "in_progress",
-        statusLabel: "🔵 กำลังดำเนินการ",
-        resolution: "กำลังจัดทำ Prompt เจนภาพ 5 สไตล์ด้วย Google Gemini 3.1 Pro",
-        attachedImage: ""
+        statusLabel: "🟢 เสร็จสิ้น"
       }
     ];
+
+    // Default Seed Issues (Clean & Concise)
+    const DEFAULT_ISSUES = [
+      {
+        ticketId: "ISSUE-101",
+        timestamp: "2026-08-29T20:45:00.000Z",
+        seriesTitle: "FEEDBACK_CULTURE",
+        episode: "EP.3",
+        category: "สร้างภาพใหม่",
+        categoryLabel: "🎨 สร้างภาพใหม่",
+        status: "completed",
+        statusLabel: "🟢 เสร็จสิ้น"
+      },
+      {
+        ticketId: "ISSUE-102",
+        timestamp: "2026-08-29T21:15:00.000Z",
+        seriesTitle: "DECISION_MAKING",
+        episode: "EP.1",
+        category: "แก้เสียง",
+        categoryLabel: "🎙️ แก้เสียง",
+        status: "completed",
+        statusLabel: "🟢 เสร็จสิ้น"
+      },
+      {
+        ticketId: "ISSUE-103",
+        timestamp: "2026-08-30T01:10:00.000Z",
+        seriesTitle: "LEADERSHIP",
+        episode: "EP.5",
+        category: "สร้างภาพใหม่",
+        categoryLabel: "🎨 สร้างภาพใหม่",
+        status: "pending",
+        statusLabel: "🟡 รอดำเนินการ"
+      }
+    ];
+
+    function getTopicRequestsQueue() {
+      const stored = localStorage.getItem('leadership_topic_requests_queue');
+      if (!stored) {
+        localStorage.setItem('leadership_topic_requests_queue', JSON.stringify(DEFAULT_TOPIC_REQUESTS));
+        return DEFAULT_TOPIC_REQUESTS;
+      }
+      try {
+        return JSON.parse(stored);
+      } catch(e) {
+        return DEFAULT_TOPIC_REQUESTS;
+      }
+    }
+
+    function saveTopicRequestsQueue(queue) {
+      localStorage.setItem('leadership_topic_requests_queue', JSON.stringify(queue));
+      updateQueueBadge();
+    }
 
     function getIssuesQueue() {
       const stored = localStorage.getItem('leadership_issues_queue');
@@ -1795,14 +1832,38 @@
       btn.disabled = false;
       btn.innerText = '🚀 ส่งคำขอเข้าสู่คิวงาน AI Pipeline';
 
-      openQueueTrackerModal();
+      openQueueTrackerModal('issues');
     }
 
     /* Queue Tracker Handlers */
+    let currentQueueType = 'requests';
     let currentFilter = 'all';
 
-    function openQueueTrackerModal() {
+    function switchQueueType(type) {
+      currentQueueType = type;
+      const btnReq = document.getElementById('tabQueueRequests');
+      const btnIss = document.getElementById('tabQueueIssues');
+      
+      if (type === 'requests') {
+        btnReq.style.background = 'linear-gradient(135deg, var(--gold), #B45309)';
+        btnReq.style.color = '#fff';
+        btnIss.style.background = 'rgba(255,255,255,0.06)';
+        btnIss.style.color = 'var(--text-muted)';
+      } else {
+        btnIss.style.background = 'linear-gradient(135deg, #DC2626, #991B1B)';
+        btnIss.style.color = '#fff';
+        btnReq.style.background = 'rgba(255,255,255,0.06)';
+        btnReq.style.color = 'var(--text-muted)';
+      }
       renderQueueTracker();
+    }
+
+    function openQueueTrackerModal(preferredType) {
+      if (preferredType) {
+        switchQueueType(preferredType);
+      } else {
+        renderQueueTracker();
+      }
       document.getElementById('queueTrackerOverlay').classList.add('active');
     }
     function closeQueueTracker(e) {
@@ -1823,7 +1884,7 @@
     }
 
     function renderQueueTracker() {
-      const queue = getIssuesQueue();
+      const queue = currentQueueType === 'requests' ? getTopicRequestsQueue() : getIssuesQueue();
       
       const total = queue.length;
       const pending = queue.filter(q => q.status === 'pending').length;
@@ -1841,42 +1902,46 @@
       container.innerHTML = '';
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:32px; color:var(--text-muted);">ไม่มีรายการคำขอในหมวดนี้</div>';
+        container.innerHTML = `<div style="text-align:center; padding:32px; color:var(--text-muted);">ไม่มีรายการในหมวดนี้</div>`;
         return;
       }
 
       filtered.forEach(t => {
         const card = document.createElement('div');
         card.className = 'ticket-card';
+        card.style.padding = '12px 18px';
+        card.style.marginBottom = '8px';
 
         const statusClass = `status-${t.status}`;
-        const timeFormatted = new Date(t.timestamp).toLocaleString('th-TH');
 
-        let imgHtml = '';
-        if (t.attachedImage) {
-          imgHtml = `<img src="${t.attachedImage}" class="ticket-img-preview" alt="Attached Ref" onclick="openLightbox('${t.attachedImage}')" title="คลิกเพื่อดูภาพขยาย">`;
+        if (currentQueueType === 'requests') {
+          card.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <span class="ticket-id" style="font-size:12px; font-weight:800; color:var(--gold-light);">${t.ticketId}</span>
+                <span style="font-size:14px; font-weight:700; color:#fff;">${t.topic}</span>
+                <span class="badge" style="background:rgba(59, 130, 246, 0.15); color:#93C5FD; border:1px solid rgba(59, 130, 246, 0.3); font-weight:700; padding:2px 8px; border-radius:6px; font-size:12px;">📁 ${t.category}</span>
+              </div>
+              <div>
+                <span class="ticket-status ${statusClass}" style="font-size:11px;">${t.statusLabel}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          const actionTag = t.categoryLabel || t.category || "🎨 สร้างภาพใหม่";
+          card.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <span class="ticket-id" style="font-size:12px; font-weight:800; color:#F87171;">${t.ticketId}</span>
+                <span style="font-size:14px; font-weight:700; color:#fff;">${t.seriesTitle || t.series} <span style="color:var(--text-muted); font-weight:400; font-size:12px;">(${t.episode})</span></span>
+                <span class="badge" style="background:rgba(217, 119, 6, 0.15); color:var(--gold-light); border:1px solid rgba(217, 119, 6, 0.3); font-weight:700; padding:2px 8px; border-radius:6px; font-size:12px;">${actionTag}</span>
+              </div>
+              <div>
+                <span class="ticket-status ${statusClass}" style="font-size:11px;">${t.statusLabel}</span>
+              </div>
+            </div>
+          `;
         }
-
-        let resHtml = '';
-        if (t.resolution) {
-          resHtml = `<div class="ticket-resolution"><strong>🤖 บันทึกการดำเนินการ:</strong> ${t.resolution}</div>`;
-        }
-
-        card.innerHTML = `
-          <div class="ticket-header">
-            <span class="ticket-id">${t.ticketId}</span>
-            <span class="ticket-status ${statusClass}">${t.statusLabel}</span>
-          </div>
-          <div class="ticket-meta">
-            <span>📚 ${t.seriesTitle || t.series}</span>
-            <span>🔢 ${t.episode}</span>
-            <span>🏷️ ${t.categoryLabel}</span>
-            <span>🕒 ${timeFormatted}</span>
-          </div>
-          <div class="ticket-desc">${t.details}</div>
-          ${imgHtml}
-          ${resHtml}
-        `;
         container.appendChild(card);
       });
     }
@@ -1917,6 +1982,21 @@
         timestamp: new Date().toISOString()
       };
 
+      const newReq = {
+        ticketId: ticketId,
+        timestamp: new Date().toISOString(),
+        topic: topic,
+        category: category,
+        details: details,
+        contact: contact,
+        status: "pending",
+        statusLabel: "🟡 รอดำเนินการ"
+      };
+
+      const reqQueue = getTopicRequestsQueue();
+      reqQueue.unshift(newReq);
+      saveTopicRequestsQueue(reqQueue);
+
       try {
         await fetch(GAS_WEBHOOK_URL, {
           method: 'POST',
@@ -1924,17 +2004,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+      } catch (err) {}
 
-        alert(`✅ ส่งคำขอสำเร็จเรียบร้อย!\n\nรหัส Ticket: ${ticketId}\nหัวข้อ: ${topic}\n\nระบบ Autonomous AI ได้รับคำขอและจัดเข้าคิวการผลิตบทความแล้วครับ`);
-        document.getElementById('topicReqForm').reset();
-        closeReqModalDirect();
-      } catch (err) {
-        alert(`✅ ส่งคำขอเรียบร้อย (บันทึกรหัส Ticket: ${ticketId})`);
-        closeReqModalDirect();
-      } finally {
-        btn.disabled = false;
-        btn.innerText = '🚀 ส่งหัวข้อเข้าสู่ระบบ AI Pipeline';
-      }
+      alert(`✅ ส่งคำขอสำเร็จเรียบร้อย!\n\nรหัส Ticket: ${ticketId}\nหัวข้อ: ${topic}\n\nระบบ Autonomous AI ได้รับคำขอและจัดเข้าคิวการผลิตบทความแล้วครับ`);
+      document.getElementById('topicReqForm').reset();
+      closeReqModalDirect();
+      btn.disabled = false;
+      btn.innerText = '🚀 ส่งหัวข้อเข้าสู่ระบบ AI Pipeline';
+      openQueueTrackerModal('requests');
     }
 
     // Init
