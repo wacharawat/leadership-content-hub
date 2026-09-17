@@ -1095,33 +1095,33 @@
     <div class="stats-grid">
       <div class="stat-box">
         <div class="title">Active Series</div>
-        <div class="val" id="statSeries">15</div>
+        <div class="val" id="statSeries">28</div>
         <div class="sub">11 ซีรีส์พร้อมอ่าน • 4 รอผลิต</div>
       </div>
       <div class="stat-box">
         <div class="title">Total Episodes</div>
-        <div class="val" id="statEpisodes">31</div>
+        <div class="val" id="statEpisodes">88</div>
         <div class="sub">บทความสองภาษาและสื่อครบชุด</div>
       </div>
       <div class="stat-box">
         <div class="title">Studio Voice Clones</div>
-        <div class="val" id="statVoices">31 / 31</div>
+        <div class="val" id="statVoices">88 / 88</div>
         <div class="sub">Higgs Audio v3 • สตูดิโอเต็มเรื่อง</div>
       </div>
       <div class="stat-box">
         <div class="title">Visual Assets</div>
-        <div class="val" id="statImages">67</div>
+        <div class="val" id="statImages">442</div>
         <div class="sub">Gemini 3.1 Pro Pure AI (1-5 สไตล์)</div>
       </div>
     </div>
 
     <!-- Global Latest Episode Spotlight Banner -->
-    <div class="next-spotlight" onclick="openEpisode('CONFLICT_RESOLUTION', 1)" style="cursor: pointer;" title="คลิกเพื่อเปิดดูตอนล่าสุด">
+    <div class="next-spotlight" onclick="openEpisode('STRESS_MANAGEMENT', 3)" style="cursor: pointer;" title="คลิกเพื่อเปิดดูตอนล่าสุด">
       <div class="next-icon">🔥</div>
       <div class="next-info">
         <span class="next-tag">🟢 LATEST EPISODE UPDATED • ตอนใหม่ล่าสุดที่อัปเดตเข้าระบบ</span>
-        <div class="next-title">CONFLICT_RESOLUTION — EP.1: กำแพงไซโลไม่ได้สร้างจากอิฐ แต่สร้างจากตัวชี้วัดที่แยกเราออกจากกัน</div>
-        <div class="next-desc">📅 วันที่อัปเดตล่าสุด: 30 สิงหาคม 2569 (22:12 น.) • มัลติมีเดีย: 5 ภาพ Pure AI (Gemini 3.1 Pro) + วิดีโอ 1080p Hardsub + เสียงพากย์ Higgs Cloned Voice v3</div>
+        <div class="next-title">STRESS_MANAGEMENT — EP.3: สร้างระบบนิเวศแห่งการฟื้นฟู (The Restorative Leadership Ecosystem): เมื่อวัฒนธรรมเห็นอกเห็นใจและโครงสร้างที่ยืดหยุ่น คือภูมิคุ้มกันความเครียดระดับองค์กร</div>
+        <div class="next-desc">📅 วันที่อัปเดตล่าสุด: 17/09/2569 • มัลติมีเดีย: 5 ภาพ Pure AI (Gemini 3.1 Pro) + วิดีโอ 1080p Hardsub + เสียงพากย์ Studio Persona</div>
       </div>
     </div>
 
@@ -1223,7 +1223,35 @@
           <div class="form-group">
             <label>📌 หัวข้อบทความ (Series / Topic) *</label>
             <select class="form-control" id="issueSeries" required onchange="updateIssueEpOptions()">
-              <option value="">-- กรุณาเลือกหัวข้อ --</option>
+<option value="">-- กรุณาเลือกหัวข้อ --</option>
+              <option value="AI_AT_WORK">🤖 AI กับการทำงานในอนาคต (AI at Work)</option>
+              <option value="CHANGE_LEADERSHIP">🔄 ผู้นำการเปลี่ยนแปลง (Change Leadership)</option>
+              <option value="COACHING_MINDSET">🧭 กรอบคิดการโค้ช (Coaching Mindset)</option>
+              <option value="CONFLICT_RESOLUTION">⚖️ การจัดการความขัดแย้ง (Constructive Conflict)</option>
+              <option value="CREATIVE_PROBLEM_SOLVING">💡 การแก้ปัญหาอย่างสร้างสรรค์ (Creative Problem Solving)</option>
+              <option value="CRISIS_COMMUNICATION">🚨 การสื่อสารในภาวะวิกฤต (Crisis Communication)</option>
+              <option value="CRITICAL_THINKING">🔍 การคิดเชิงวิพากษ์ (Critical Thinking)</option>
+              <option value="DECISION_MAKING_UNDER_PRESSURE">⚡ การตัดสินใจภายใต้ความกดดัน (Decision Making Under Pressure)</option>
+              <option value="DELEGATION">🎯 การมอบหมายงานอย่างมีพลัง (Empowered Delegation)</option>
+              <option value="DESIGN_THINKING">🎨 การคิดเชิงออกแบบ (Design Thinking)</option>
+              <option value="EMOTIONAL_AGILITY">🌊 ความคล่องตัวทางอารมณ์ (Emotional Agility)</option>
+              <option value="EMPATHIC_COMMUNICATION">🤝 การสื่อสารด้วยความเข้าอกเข้าใจ (Empathic Communication)</option>
+              <option value="FEEDBACK_CULTURE">💬 วัฒนธรรมฟีดแบ็ก (Feedback Culture)</option>
+              <option value="INFLUENCE_WITHOUT_AUTHORITY">🧲 การโน้มน้าวใจโดยไร้อำนาจสั่งการ (Influence Without Authority)</option>
+              <option value="LEADERSHIP">👑 ภาวะผู้นำ (Leadership Mastery)</option>
+              <option value="LISTENING">👂 การฟังเชิงลึก (Active & Deep Listening)</option>
+              <option value="MANAGING_UP">🚀 การทำงานร่วมกับหัวหน้า (Managing Up)</option>
+              <option value="MENTAL_MODELS">🧩 แบบจำลองความคิด (Mental Models for Leaders)</option>
+              <option value="MINDFULNESS">🧘 สติและการตื่นรู้ในการทำงาน (Mindfulness in Leadership)</option>
+              <option value="PERFORMANCE">📈 การพัฒนาผลงานต่อเนื่อง (Continuous Performance)</option>
+              <option value="PSYCHOLOGICAL_SAFETY">🛡️ ความปลอดภัยทางจิตวิทยา (Psychological Safety)</option>
+              <option value="RADICAL_CANDOR_AT_SCALE">💎 ความตรงไปตรงมาด้วยความใส่ใจ (Radical Candor at Scale)</option>
+              <option value="RECOGNITION">🏆 การชื่นชมและให้คุณค่า (Meaningful Recognition)</option>
+              <option value="RESILIENCE">🌱 ความยืดหยุ่นและการฟื้นตัว (Resilience & Adaptability)</option>
+              <option value="STRATEGIC_ALIGNMENT">🧭 การปรับแนวทางเชิงกลยุทธ์ (Strategic Alignment)</option>
+              <option value="STRESS_MANAGEMENT">⚡ การจัดการความเครียดและการฟื้นฟูพลังงาน (Stress Management & Energy Renewal)</option>
+              <option value="SYSTEMS_THINKING">🌐 การคิดเชิงระบบ (Systems Thinking)</option>
+              <option value="TRUST_BUILDING">🏰 การสร้างความไว้วางใจ (Trust Building)</option>
             </select>
           </div>
 
