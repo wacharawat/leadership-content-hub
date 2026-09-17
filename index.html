@@ -1162,6 +1162,7 @@
           <div class="toolkit-title">⚡ Multi-Format Action Toolkit:</div>
           <div class="toolkit-buttons">
             <button class="btn-tool danger" onclick="openIssueModalForActiveEpisode()">⚠️ แจ้งปัญหาตอนนี้</button>
+            <button class="btn-tool" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35)); border-color: rgba(16, 185, 129, 0.5); color: #A7F3D0; font-weight: 700;" onclick="copySummaryFormat()">📌 สรุปใจความสำคัญ (Summary)</button>
             <button class="btn-tool" onclick="copyLinkedInFormat()">📋 LinkedIn Format</button>
             <button class="btn-tool" onclick="copyFacebookFormat()">📘 Facebook Format</button>
             <button class="btn-tool" onclick="copyFullBilingual()">📄 บทความเต็ม 2 ภาษา</button>
@@ -1916,6 +1917,90 @@
                    `${episode.bodyEn}`;
       navigator.clipboard.writeText(text);
       alert('✅ คัดลอกบทความสองภาษาฉบับเต็มเรียบร้อยแล้ว!');
+    }
+
+    function extractHashtagsAndFooters(text) {
+      const hashtags = [];
+      const lines = text.split('\n');
+      const cleanLines = [];
+      let pivotFooter = "";
+
+      for (let l of lines) {
+        let trimmed = l.trim();
+        if (!trimmed) continue;
+        if (trimmed.includes("The PIVOT Feedback Mastery") || trimmed.includes("coachmanthipan.canva.link")) {
+          pivotFooter = trimmed;
+          continue;
+        }
+        const tagsInLine = trimmed.match(/#[A-Za-z0-9_\u0E00-\u0E7F]+/g);
+        if (tagsInLine && trimmed.startsWith('#')) {
+          tagsInLine.forEach(t => { if (!hashtags.includes(t)) hashtags.push(t); });
+        } else {
+          cleanLines.push(trimmed);
+          if (tagsInLine) {
+            tagsInLine.forEach(t => { if (!hashtags.includes(t)) hashtags.push(t); });
+          }
+        }
+      }
+      return { cleanLines, hashtags, pivotFooter };
+    }
+
+    function summarizeText(lines) {
+      if (!lines || lines.length === 0) return "";
+      const bulletLines = lines.filter(l => /^[0-9]+[\.\)]|^\•|^\-|^[A-Z0-9]+\./i.test(l));
+      const normalLines = lines.filter(l => !/^[0-9]+[\.\)]|^\•|^\-|^[A-Z0-9]+\./i.test(l) && l.length > 20);
+
+      let summaryParts = [];
+      if (normalLines.length > 0) {
+        summaryParts.push(normalLines[0]);
+      }
+      if (bulletLines.length > 0) {
+        summaryParts.push(bulletLines.slice(0, 4).join('\n'));
+      } else if (normalLines.length > 1) {
+        summaryParts.push(normalLines[1]);
+        if (normalLines.length > 2) {
+          summaryParts.push(normalLines[normalLines.length - 1]);
+        }
+      }
+      return summaryParts.join('\n\n');
+    }
+
+    function copySummaryFormat() {
+      if (!activeEpisode) return;
+      const { series, episode } = activeEpisode;
+
+      const thData = extractHashtagsAndFooters(episode.bodyTh || "");
+      const thSummary = summarizeText(thData.cleanLines);
+
+      const enData = extractHashtagsAndFooters(episode.bodyEn || "");
+      const enSummary = summarizeText(enData.cleanLines);
+
+      const allHashtags = Array.from(new Set([...thData.hashtags, ...enData.hashtags]));
+      if (allHashtags.length === 0) {
+        allHashtags.push("#Leadership", "#ExecutiveSummary", "#Management", "#OD", "#PIVOTFeedbackMastery");
+      }
+
+      const footer = thData.pivotFooter || enData.pivotFooter || "The PIVOT Feedback Mastery® #ศิลปะการปรับทิศทางผลงานให้ได้ผลลัพธ์และได้รับความไว้วางใจ #หลักสูตรลิขสิทธิ์ by Coach MaM ที่กลั่นจากประสบการณ์ตรง กว่า 30 ปี สอบถามรายละเอียดโปรแกรมได้ที่: Tel: 085-327-1116, 086-892-4899, 099-159-4144 Contract Click : [https://coachmanthipan.canva.link/khonkiddee](https://coachmanthipan.canva.link/khonkiddee)";
+
+      const formattedSummary = 
+`📌 [สรุปใจความสำคัญ • Executive Summary]
+${series.icon || "📚"} ${series.id} — EP.${episode.ep}: ${episode.title}
+
+🇹🇭 สรุปประเด็นหลัก (Thai Summary):
+${thSummary}
+
+─────────────────────────
+🇬🇧 Key Executive Takeaways (English):
+${enSummary}
+
+─────────────────────────
+🏷️ Hashtags:
+${allHashtags.join(" ")}
+
+${footer}`;
+
+      navigator.clipboard.writeText(formattedSummary);
+      alert('✅ คัดลอกรูปแบบสรุปใจความสำคัญ (Executive Summary) สองภาษาพร้อม Hashtag เรียบร้อยแล้ว!');
     }
 
     function copyChecklist() {
